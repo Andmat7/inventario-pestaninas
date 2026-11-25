@@ -4,27 +4,25 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#d6336c">
-<title>Inventario Pestañinas · Conteo rápido</title>
+<title>Conteo de pestañinas</title>
 <style>
   :root{
     --bg:#fff7fa; --card:#fff; --ink:#2b1a22; --muted:#8a6f7b; --line:#f1dbe4;
-    --brand:#d6336c; --brand-2:#f06595; --ok:#2f9e44; --warn:#f08c00; --bad:#e03131;
-    --r:18px; --shadow:0 6px 20px rgba(214,51,108,.10);
+    --brand:#d6336c; --brand-2:#f06595; --ok:#2f9e44; --r:18px; --shadow:0 6px 20px rgba(214,51,108,.10);
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-  body{padding-bottom:calc(84px + env(safe-area-inset-bottom))}
-  header{position:sticky;top:0;z-index:5;background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;padding:16px 16px 14px;border-radius:0 0 24px 24px;box-shadow:var(--shadow)}
-  .top{display:flex;align-items:center;justify-content:space-between;gap:8px}
-  h1{font-size:1.15rem;margin:0;font-weight:700;letter-spacing:.2px}
-  .sub{font-size:.78rem;opacity:.85;margin-top:2px}
-  .icon-btn{border:0;background:rgba(255,255,255,.18);color:#fff;width:42px;height:42px;border-radius:14px;font-size:1.2rem;cursor:pointer}
-  .search{margin-top:12px;display:flex;gap:8px}
-  .search input{flex:1;min-width:0;border:0;border-radius:14px;padding:12px 14px;font-size:16px;outline:none;background:#fff;color:var(--ink)}
-  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
-  .stat{background:rgba(255,255,255,.16);border-radius:14px;padding:8px 10px}
-  .stat b{display:block;font-size:1.15rem}
-  .stat span{font-size:.7rem;opacity:.9}
+  body{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+  header{position:sticky;top:0;z-index:5;background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;padding:18px 16px 14px;border-radius:0 0 24px 24px;box-shadow:var(--shadow)}
+  .top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+  .hola{font-size:1.5rem;font-weight:800;margin:0;line-height:1.1;cursor:pointer}
+  .sub{font-size:.8rem;opacity:.9;margin-top:4px}
+  .badge{background:rgba(255,255,255,.2);border-radius:999px;padding:6px 10px;font-size:.75rem;font-weight:700;white-space:nowrap}
+  .progress{margin-top:12px;background:rgba(255,255,255,.25);height:8px;border-radius:9px;overflow:hidden}
+  .progress i{display:block;height:100%;background:#fff;border-radius:9px;transition:width .3s}
+  .ptext{display:flex;justify-content:space-between;font-size:.75rem;margin-top:6px;opacity:.95}
+  .search{margin-top:12px}
+  .search input{width:100%;border:0;border-radius:14px;padding:12px 14px;font-size:16px;outline:none;background:#fff;color:var(--ink)}
   .chips{display:flex;gap:8px;overflow-x:auto;padding:14px 16px 4px;scrollbar-width:none}
   .chips::-webkit-scrollbar{display:none}
   .chip{flex:none;border:1px solid var(--line);background:#fff;color:var(--ink);padding:8px 14px;border-radius:999px;font-size:.85rem;cursor:pointer}
@@ -32,50 +30,43 @@
   main{padding:8px 16px}
   .list{display:grid;gap:10px}
   .item{background:var(--card);border-radius:var(--r);padding:12px;box-shadow:var(--shadow);display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;border:2px solid transparent;transition:border-color .2s}
+  .item.done{border-color:#c3e6cb}
   .item.flash{border-color:var(--brand)}
   .name{font-weight:600;font-size:.95rem;line-height:1.25}
   .meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;font-size:.72rem;color:var(--muted)}
   .tag{background:#fdeef4;color:var(--brand);padding:2px 8px;border-radius:999px;font-weight:600}
-  .lvl{display:inline-flex;align-items:center;gap:4px}
-  .dot{width:8px;height:8px;border-radius:50%}
   .stepper{display:flex;align-items:center;gap:6px}
-  .stepper button{width:40px;height:40px;border-radius:12px;border:0;font-size:1.3rem;font-weight:700;cursor:pointer}
+  .stepper button{width:42px;height:42px;border-radius:12px;border:0;font-size:1.3rem;font-weight:700;cursor:pointer}
   .minus{background:#f8e9ef;color:var(--brand)}
   .plus{background:var(--brand);color:#fff}
-  .qty{min-width:38px;text-align:center;font-weight:800;font-size:1.2rem}
+  .qty{width:46px;text-align:center;font-weight:800;font-size:1.2rem;border:0;background:none;color:var(--ink);padding:0}
+  .qty::placeholder{color:#d9c3cd}
   .empty{text-align:center;color:var(--muted);padding:40px 0}
-  nav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr);padding:8px 8px calc(8px + env(safe-area-inset-bottom));z-index:6}
-  nav button{border:0;background:none;color:var(--muted);font-size:.7rem;display:grid;gap:2px;place-items:center;cursor:pointer;padding:4px}
-  nav button i{font-style:normal;font-size:1.3rem}
-  nav button.on{color:var(--brand);font-weight:700}
-  /* sheet */
+  .bottom{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);padding:10px 16px calc(10px + env(safe-area-inset-bottom));z-index:6;display:flex;gap:8px}
+  .bottom button{border:0;border-radius:14px;padding:15px;font-weight:800;font-size:1rem;cursor:pointer}
+  .send{flex:1;background:var(--brand);color:#fff}
+  .sec{background:#f8e9ef;color:var(--brand)}
   .backdrop{position:fixed;inset:0;background:rgba(43,26,34,.45);opacity:0;pointer-events:none;transition:.2s;z-index:9}
   .backdrop.open{opacity:1;pointer-events:auto}
-  .sheet{position:fixed;left:0;right:0;bottom:0;background:#fff;border-radius:24px 24px 0 0;padding:10px 18px calc(18px + env(safe-area-inset-bottom));transform:translateY(105%);transition:transform .25s ease;z-index:10;max-height:88vh;overflow:auto}
+  .sheet{position:fixed;left:0;right:0;bottom:0;background:#fff;border-radius:24px 24px 0 0;padding:10px 18px calc(18px + env(safe-area-inset-bottom));transform:translateY(105%);transition:transform .25s ease;z-index:10;max-height:90vh;overflow:auto}
   .sheet.open{transform:none}
   .grab{width:44px;height:5px;background:var(--line);border-radius:9px;margin:0 auto 12px}
-  .sheet h2{margin:0 0 4px;font-size:1.05rem}
-  label{display:block;font-size:.78rem;color:var(--muted);margin:12px 0 4px}
-  .field{width:100%;border:1px solid var(--line);border-radius:12px;padding:12px;font-size:16px;background:#fff;color:var(--ink)}
-  .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  .btn{width:100%;border:0;border-radius:14px;padding:14px;font-size:1rem;font-weight:700;cursor:pointer;margin-top:16px}
+  .sheet h2{margin:0 0 6px;font-size:1.15rem}
+  .preview{background:#fff7fa;border:1px solid var(--line);border-radius:14px;padding:12px;font-family:ui-monospace,Consolas,monospace;font-size:.78rem;white-space:pre-wrap;max-height:40vh;overflow:auto;margin:10px 0}
+  .warn{background:#fff4e6;color:#a35a00;border-radius:12px;padding:10px 12px;font-size:.85rem;margin-top:8px}
+  .btn{width:100%;border:0;border-radius:14px;padding:14px;font-size:1rem;font-weight:700;cursor:pointer;margin-top:8px}
   .btn.primary{background:var(--brand);color:#fff}
-  .btn.ghost{background:#f8e9ef;color:var(--brand);margin-top:8px}
-  .big-qty{display:flex;align-items:center;justify-content:center;gap:16px;margin:14px 0}
-  .big-qty button{width:56px;height:56px;border-radius:16px;border:0;font-size:1.6rem;font-weight:800;cursor:pointer}
-  .big-qty input{width:90px;text-align:center;font-size:2rem;font-weight:800;border:0;border-bottom:2px solid var(--line);color:var(--ink);background:none}
-  .hist{display:grid;gap:8px}
-  .h{background:#fff;border-radius:14px;padding:10px 12px;box-shadow:var(--shadow);display:flex;justify-content:space-between;gap:8px;font-size:.85rem}
-  .h small{color:var(--muted);display:block}
-  .pos{color:var(--ok);font-weight:800}.neg{color:var(--bad);font-weight:800}
-  .toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:10px 16px;border-radius:12px;font-size:.85rem;opacity:0;transition:.2s;z-index:20;white-space:nowrap}
+  .btn.wa{background:#25d366;color:#08331a}
+  .btn.ghost{background:#f8e9ef;color:var(--brand)}
+  .field{width:100%;border:1px solid var(--line);border-radius:12px;padding:12px;font-size:16px;margin-top:6px}
+  .stores{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+  .stores button{border:1px solid var(--line);background:#fff;border-radius:12px;padding:12px;font-size:.95rem;cursor:pointer}
+  .toast{position:fixed;left:50%;bottom:100px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:10px 16px;border-radius:12px;font-size:.85rem;opacity:0;transition:.2s;z-index:20;white-space:nowrap}
   .toast.show{opacity:1;transform:translateX(-50%)}
-  .section-title{font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:10px 2px}
   @media (min-width:760px){
     main,.chips{max-width:900px;margin:0 auto}
     .list{grid-template-columns:1fr 1fr}
-    header{border-radius:0 0 28px 28px}
-    .sheet{max-width:520px;margin:0 auto;border-radius:24px 24px 0 0}
+    .sheet{max-width:520px;margin:0 auto}
   }
 </style>
 </head>
@@ -84,46 +75,32 @@
 <header>
   <div class="top">
     <div>
-      <h1>💗 Pestañinas</h1>
-      <div class="sub">Inventario · Difer Stores</div>
+      <h1 class="hola" id="hola" title="Cambiar tienda">Hola 👋</h1>
+      <div class="sub" id="fecha"></div>
     </div>
-    <button class="icon-btn" id="scanBtn" title="Escanear código">⌁</button>
+    <span class="badge" id="estado">Sin enviar</span>
   </div>
+  <div class="progress"><i id="bar"></i></div>
+  <div class="ptext"><span id="ptxt">0 de 0 contados</span><span id="units">0 unidades</span></div>
   <div class="search">
-    <input id="q" type="search" placeholder="Buscar nombre, código o escanear…" autocomplete="off" enterkeyhint="search">
-  </div>
-  <div class="stats">
-    <div class="stat"><b id="sRefs">0</b><span>Referencias</span></div>
-    <div class="stat"><b id="sUnits">0</b><span>Unidades</span></div>
-    <div class="stat"><b id="sLow">0</b><span>Stock bajo</span></div>
+    <input id="q" type="search" placeholder="Buscar o escanear código…" autocomplete="off" enterkeyhint="search">
   </div>
 </header>
 
 <div class="chips" id="chips"></div>
+<main><div class="list" id="list"></div></main>
 
-<main>
-  <section id="viewInv">
-    <div class="list" id="list"></div>
-  </section>
-  <section id="viewHist" hidden>
-    <div class="section-title">Últimos movimientos</div>
-    <div class="hist" id="hist"></div>
-  </section>
-</main>
-
-<nav>
-  <button class="on" data-view="inv"><i>📦</i>Inventario</button>
-  <button data-act="new"><i>➕</i>Nuevo</button>
-  <button data-view="hist"><i>🕑</i>Historial</button>
-  <button data-act="export"><i>⬇️</i>Exportar</button>
-</nav>
+<div class="bottom">
+  <button class="sec" id="scanBtn" title="Escanear">⌁ Escanear</button>
+  <button class="send" id="sendBtn">Enviar conteo de hoy</button>
+</div>
 
 <div class="backdrop" id="backdrop"></div>
 <div class="sheet" id="sheet"></div>
 <div class="toast" id="toast"></div>
 
 <script>
-const SEED = [
+const PRODUCTS = [
   ["P303","P303","Primer Pestañas Esika","Esika"],
   ["200118939","P1532","Mascara De Pestañas Magnetic Lash","Cyzone"],
   ["200109566","P1533","Mascara De Pestañas Max Volume Lash","Cyzone"],
@@ -142,145 +119,154 @@ const SEED = [
   ["0014157","P1581","Mascara De Pestañas Super Lift","Yanbal"],
   ["0014158","P1582","Mascara De Pestañas Ultra Resist","Yanbal"],
   ["0013768","P535","Mascara De Pestañas XL","Yanbal"]
-];
-const KEY="pestaninas_v1";
-let state = JSON.parse(localStorage.getItem(KEY)||"null") || {
-  items: SEED.map(([barcode,code,name,brand],i)=>({id:code.toUpperCase(),barcode,code:code.toUpperCase(),name,brand,stock:[6,3,0,8,2,5,1,4,9,0,7,3,2,6,1,10,4,2][i],min:3,price:0})),
-  moves: []
-};
-let brand="Todas", view="inv";
+].map(([barcode,code,name,brand])=>({barcode,code,name,brand}));
+const TIENDAS=["Soacha","Bosa","Kennedy","Suba"]; // ajusta tus tiendas
+
 const $=s=>document.querySelector(s);
-const save=()=>localStorage.setItem(KEY,JSON.stringify(state));
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const norm=s=>String(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
-const stripZeros=s=>String(s).replace(/^0+/,"");
-const level=it=>it.stock<=0?["Agotado","var(--bad)"]:it.stock<=it.min?["Bajo","var(--warn)"]:["OK","var(--ok)"];
-const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const z=s=>String(s).replace(/^0+/,"");
+const hoy=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`};
 
-function toast(msg){const t=$("#toast");t.textContent=msg;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),1600)}
+// Tienda: ?tienda=Soacha en la URL, o la que se eligió antes
+const urlTienda=new URLSearchParams(location.search).get("tienda");
+if(urlTienda)localStorage.setItem("pest_tienda",urlTienda);
+let tienda=localStorage.getItem("pest_tienda")||"";
+const key=()=>`pest_conteo_v1_${norm(tienda)}_${hoy()}`;
+let C=load();
+function load(){return JSON.parse(localStorage.getItem(key())||"null")||{counts:{},sentAt:null}}
+const save=()=>localStorage.setItem(key(),JSON.stringify(C));
+let brand="Todas";
 
-function move(it,delta,note=""){
-  if(it.stock+delta<0){toast("No hay stock suficiente");return}
-  it.stock+=delta;
-  state.moves.unshift({id:it.id,name:it.name,delta,stock:it.stock,note,at:Date.now()});
-  state.moves=state.moves.slice(0,300);
-  save();render();
-}
+function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),1600)}
 
-function renderChips(){
-  const brands=["Todas",...new Set(state.items.map(i=>i.brand||"Sin marca"))];
-  $("#chips").innerHTML=brands.map(b=>`<button class="chip ${b===brand?"on":""}" data-b="${esc(b)}">${esc(b)}</button>`).join("")
-    + `<button class="chip ${brand==="__low"?"on":""}" data-b="__low">⚠️ Stock bajo</button>`;
+function setCount(code,v){
+  if(v==null||v==="")delete C.counts[code];else C.counts[code]=Math.max(0,parseInt(v)||0);
+  C.sentAt=null;save();
 }
 
 function filtered(){
   const q=norm($("#q").value.trim());
-  return state.items.filter(it=>{
-    if(brand==="__low"&&it.stock>it.min)return false;
-    if(brand!=="Todas"&&brand!=="__low"&&(it.brand||"Sin marca")!==brand)return false;
-    if(!q)return true;
-    return norm(it.name+" "+it.code+" "+it.brand).includes(q)||stripZeros(it.barcode).includes(stripZeros(q));
+  return PRODUCTS.filter(p=>{
+    if(brand==="__pend"&&C.counts[p.code]!=null)return false;
+    if(brand!=="Todas"&&brand!=="__pend"&&p.brand!==brand)return false;
+    return !q||norm(p.name+" "+p.code+" "+p.brand).includes(q)||z(p.barcode).includes(z(q));
   });
 }
 
+function renderHeader(){
+  $("#hola").textContent=tienda?`Hola ${tienda} 👋`:"Hola 👋";
+  $("#fecha").textContent="Conteo de pestañinas · "+new Date().toLocaleDateString("es-CO",{weekday:"long",day:"numeric",month:"long"});
+  const n=Object.keys(C.counts).length,t=PRODUCTS.length;
+  $("#bar").style.width=(n/t*100)+"%";
+  $("#ptxt").textContent=`${n} de ${t} contados`;
+  $("#units").textContent=`${Object.values(C.counts).reduce((a,b)=>a+b,0)} unidades`;
+  $("#estado").textContent=C.sentAt?"✓ Enviado "+new Date(C.sentAt).toLocaleTimeString("es-CO",{hour:"numeric",minute:"2-digit"}):"Sin enviar";
+}
+function renderChips(){
+  const pend=PRODUCTS.filter(p=>C.counts[p.code]==null).length;
+  const brands=["Todas",...new Set(PRODUCTS.map(p=>p.brand))];
+  $("#chips").innerHTML=brands.map(b=>`<button class="chip ${b===brand?"on":""}" data-b="${esc(b)}">${esc(b)}</button>`).join("")
+    +`<button class="chip ${brand==="__pend"?"on":""}" data-b="__pend">⏳ Sin contar (${pend})</button>`;
+}
 function render(){
-  renderChips();
+  renderHeader();renderChips();
   const items=filtered();
-  $("#list").innerHTML=items.length?items.map(it=>{
-    const [lv,c]=level(it);
-    return `<div class="item" data-id="${esc(it.id)}">
-      <div data-open="${esc(it.id)}" style="cursor:pointer">
-        <div class="name">${esc(it.name)}</div>
-        <div class="meta"><span class="tag">${esc(it.brand||"Sin marca")}</span><span>${esc(it.code)}</span><span>· ${esc(it.barcode)}</span>
-        <span class="lvl"><span class="dot" style="background:${c}"></span>${lv}</span></div>
-      </div>
+  $("#list").innerHTML=items.length?items.map(p=>{
+    const c=C.counts[p.code];
+    return `<div class="item ${c!=null?"done":""}" data-code="${esc(p.code)}">
+      <div><div class="name">${esc(p.name)}</div>
+        <div class="meta"><span class="tag">${esc(p.brand)}</span><span>${esc(p.code)}</span><span>· ${esc(p.barcode)}</span></div></div>
       <div class="stepper">
-        <button class="minus" data-d="-1" data-id="${esc(it.id)}" aria-label="Restar">−</button>
-        <div class="qty">${it.stock}</div>
-        <button class="plus" data-d="1" data-id="${esc(it.id)}" aria-label="Sumar">+</button>
-      </div></div>`}).join(""):`<div class="empty">Sin resultados 🔍</div>`;
-  $("#sRefs").textContent=state.items.length;
-  $("#sUnits").textContent=state.items.reduce((a,b)=>a+b.stock,0);
-  $("#sLow").textContent=state.items.filter(i=>i.stock<=i.min).length;
-  $("#hist").innerHTML=state.moves.length?state.moves.slice(0,80).map(m=>`<div class="h"><div>${esc(m.name)}<small>${new Date(m.at).toLocaleString("es-CO")}${m.note?" · "+esc(m.note):""}</small></div><div style="text-align:right"><span class="${m.delta>0?"pos":"neg"}">${m.delta>0?"+":""}${m.delta}</span><small>quedan ${m.stock}</small></div></div>`).join(""):`<div class="empty">Aún no hay movimientos</div>`;
+        <button class="minus" data-d="-1" data-c="${esc(p.code)}" aria-label="Restar">−</button>
+        <input class="qty" type="number" inputmode="numeric" min="0" placeholder="–" value="${c??""}" data-in="${esc(p.code)}" aria-label="Cantidad">
+        <button class="plus" data-d="1" data-c="${esc(p.code)}" aria-label="Sumar">+</button>
+      </div></div>`}).join(""):`<div class="empty">${brand==="__pend"?"¡Todo contado! 🎉":"Sin resultados 🔍"}</div>`;
 }
 
 function openSheet(html){$("#sheet").innerHTML=`<div class="grab"></div>`+html;$("#sheet").classList.add("open");$("#backdrop").classList.add("open")}
 function closeSheet(){$("#sheet").classList.remove("open");$("#backdrop").classList.remove("open")}
 
-function openItem(id){
-  const it=state.items.find(i=>i.id===id);if(!it)return;
-  openSheet(`<h2>${esc(it.name)}</h2><div class="meta"><span class="tag">${esc(it.brand)}</span><span>${esc(it.code)} · ${esc(it.barcode)}</span></div>
-    <div style="text-align:center;color:var(--muted);margin-top:14px;font-size:.85rem">Stock actual: <b style="color:var(--ink)">${it.stock}</b></div>
-    <div class="big-qty"><button class="minus" id="mq">−</button><input id="mqty" type="number" inputmode="numeric" value="1" min="1"><button class="plus" id="pq">+</button></div>
-    <label>Nota (opcional)</label><input class="field" id="mnote" placeholder="Ej: venta, devolución, pedido…">
-    <div class="row"><button class="btn primary" id="in">⬆ Entrada</button><button class="btn primary" style="background:var(--ink)" id="out">⬇ Salida</button></div>
-    <div class="row"><div><label>Stock mínimo</label><input class="field" id="emin" type="number" inputmode="numeric" value="${it.min}"></div>
-    <div><label>Ajustar a (conteo)</label><input class="field" id="eset" type="number" inputmode="numeric" placeholder="${it.stock}"></div></div>
-    <button class="btn ghost" id="saveEdit">Guardar ajustes</button>`);
-  const q=()=>Math.max(1,parseInt($("#mqty").value)||1);
-  $("#mq").onclick=()=>$("#mqty").value=Math.max(1,q()-1);
-  $("#pq").onclick=()=>$("#mqty").value=q()+1;
-  $("#in").onclick=()=>{move(it,q(),$("#mnote").value);closeSheet();toast(`+${q()} ${it.code}`)};
-  $("#out").onclick=()=>{const n=q();if(it.stock-n<0)return toast("No hay stock suficiente");move(it,-n,$("#mnote").value);closeSheet();toast(`−${n} ${it.code}`)};
-  $("#saveEdit").onclick=()=>{
-    it.min=Math.max(0,parseInt($("#emin").value)||0);
-    const v=$("#eset").value;
-    if(v!==""){const n=Math.max(0,parseInt(v)||0);move(it,n-it.stock,"Ajuste por conteo")}else{save();render()}
-    closeSheet();toast("Guardado ✓");
-  };
+function askTienda(force){
+  if(tienda&&!force)return;
+  openSheet(`<h2>¿Qué tienda está contando?</h2>
+    <div class="stores">${TIENDAS.map(t=>`<button data-t="${esc(t)}">${esc(t)}</button>`).join("")}</div>
+    <input class="field" id="otra" placeholder="Otra tienda…" style="margin-top:10px">
+    <button class="btn primary" id="okT">Continuar</button>`);
+  $("#sheet").querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>pickTienda(b.dataset.t));
+  $("#okT").onclick=()=>{const v=$("#otra").value.trim();if(!v)return toast("Escribe o elige una tienda");pickTienda(v)};
+}
+function pickTienda(t){tienda=t;localStorage.setItem("pest_tienda",t);C=load();closeSheet();render();toast(`Hola ${t} 👋`)}
+
+function reporte(){
+  const d=new Date().toLocaleDateString("es-CO",{day:"2-digit",month:"2-digit",year:"numeric"});
+  const n=Object.keys(C.counts).length,u=Object.values(C.counts).reduce((a,b)=>a+b,0);
+  let txt=`📋 *Conteo pestañinas*\n🏬 Tienda: *${tienda}*\n📅 ${d}\n✅ ${n}/${PRODUCTS.length} referencias · ${u} unidades\n`;
+  const byB={};PRODUCTS.forEach(p=>(byB[p.brand]??=[]).push(p));
+  for(const [b,ps] of Object.entries(byB)){
+    txt+=`\n*${b}*\n`+ps.map(p=>`• ${p.code} ${p.name}: ${C.counts[p.code]??"SIN CONTAR"}`).join("\n")+"\n";
+  }
+  return txt.trim()+"\n\n¡Gracias! 💗";
+}
+function csv(){
+  const rows=[["Tienda","Fecha","Codigo Barra","Codigo","Nombre","Marca","Conteo"],...PRODUCTS.map(p=>[tienda,hoy(),p.barcode,p.code,p.name,p.brand,C.counts[p.code]??""])];
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob(["﻿"+rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(";")).join("\n")],{type:"text/csv"}));
+  a.download=`conteo_pestaninas_${norm(tienda).replace(/\s+/g,"_")}_${hoy()}.csv`;a.click();
+}
+function marcarEnviado(){
+  C.sentAt=Date.now();save();render();
+  const u=Object.values(C.counts).reduce((a,b)=>a+b,0);
+  openSheet(`<div style="text-align:center;padding:16px 0 4px">
+    <div style="font-size:3.5rem;line-height:1">💗</div>
+    <h2 style="font-size:1.6rem;margin:10px 0 6px">¡Gracias, ${esc(tienda)}!</h2>
+    <p style="color:var(--muted);margin:0">Tu conteo de hoy quedó enviado.<br><b style="color:var(--ink)">${Object.keys(C.counts).length} referencias · ${u} unidades</b></p>
+    <button class="btn primary" id="okG" style="margin-top:20px">Listo</button></div>`);
+  $("#okG").onclick=closeSheet;
 }
 
-function openNew(prefill=""){
-  openSheet(`<h2>Nuevo producto</h2>
-    <label>Código de barras</label><input class="field" id="nb" value="${esc(prefill)}" inputmode="numeric">
-    <div class="row"><div><label>Código</label><input class="field" id="nc" placeholder="P0000"></div>
-    <div><label>Marca</label><input class="field" id="nm" list="brands"></div></div>
-    <datalist id="brands">${[...new Set(state.items.map(i=>i.brand))].map(b=>`<option value="${esc(b)}">`).join("")}</datalist>
-    <label>Nombre</label><input class="field" id="nn" placeholder="Máscara de pestañas…">
-    <div class="row"><div><label>Stock inicial</label><input class="field" id="ns" type="number" inputmode="numeric" value="0"></div>
-    <div><label>Stock mínimo</label><input class="field" id="nmin" type="number" inputmode="numeric" value="3"></div></div>
-    <button class="btn primary" id="create">Crear producto</button>`);
-  $("#create").onclick=()=>{
-    const code=$("#nc").value.trim().toUpperCase(),name=$("#nn").value.trim();
-    if(!code||!name)return toast("Código y nombre son obligatorios");
-    if(state.items.some(i=>i.id===code))return toast("Ese código ya existe");
-    state.items.push({id:code,code,barcode:$("#nb").value.trim()||code,name,brand:$("#nm").value.trim()||"Sin marca",stock:Math.max(0,parseInt($("#ns").value)||0),min:Math.max(0,parseInt($("#nmin").value)||0)});
-    save();closeSheet();render();toast("Producto creado ✓");
-  };
+function openSend(){
+  if(!tienda)return askTienda(true);
+  const pend=PRODUCTS.length-Object.keys(C.counts).length;
+  const txt=reporte();
+  openSheet(`<h2>Enviar conteo de hoy · ${esc(tienda)}</h2>
+    ${pend?`<div class="warn">⚠️ Faltan <b>${pend}</b> referencias por contar. Se enviarán como "SIN CONTAR".</div>`:""}
+    <div class="preview">${esc(txt)}</div>
+    <button class="btn wa" id="wa">Enviar por WhatsApp</button>
+    ${navigator.share?`<button class="btn primary" id="sh">Compartir…</button>`:""}
+    <button class="btn ghost" id="cp">Copiar texto</button>
+    <button class="btn ghost" id="dl">Descargar CSV</button>`);
+  $("#wa").onclick=()=>{window.open("https://wa.me/?text="+encodeURIComponent(txt),"_blank");marcarEnviado()};
+  if(navigator.share)$("#sh").onclick=async()=>{try{await navigator.share({title:"Conteo pestañinas "+tienda,text:txt});marcarEnviado()}catch(e){}};
+  $("#cp").onclick=async()=>{try{await navigator.clipboard.writeText(txt);toast("Copiado ✓")}catch(e){toast("No se pudo copiar")}};
+  $("#dl").onclick=()=>{csv();toast("CSV descargado")};
 }
 
-function exportCSV(){
-  const rows=[["Codigo Barra","Codigo","Nombre","Marca","Stock","Minimo"],...state.items.map(i=>[i.barcode,i.code,i.name,i.brand,i.stock,i.min])];
-  const csv="﻿"+rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(";")).join("\n");
-  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
-  a.download=`inventario_pestaninas_${new Date().toISOString().slice(0,10)}.csv`;a.click();toast("CSV descargado");
-}
-
-// Escáner (lector USB/Bluetooth tipo teclado): Enter en el buscador
+// Escáner tipo teclado: cada lectura suma 1 al conteo
 $("#q").addEventListener("keydown",e=>{
   if(e.key!=="Enter")return;
-  const v=stripZeros(e.target.value.trim());if(!v)return;
-  const it=state.items.find(i=>stripZeros(i.barcode)===v||i.code===v.toUpperCase());
-  if(it){move(it,-1,"Venta (escaneo)");toast(`−1 ${it.name.slice(0,28)}…`);e.target.value="";render();
-    const el=document.querySelector(`.item[data-id="${CSS.escape(it.id)}"]`);if(el){el.classList.add("flash");el.scrollIntoView({block:"center",behavior:"smooth"});setTimeout(()=>el.classList.remove("flash"),900)}}
-  else{openNew(e.target.value.trim())}
+  const v=z(e.target.value.trim());if(!v)return;
+  const p=PRODUCTS.find(p=>z(p.barcode)===v||p.code===v.toUpperCase());
+  if(!p){toast("Código no encontrado");return}
+  e.target.value="";setCount(p.code,(C.counts[p.code]??0)+1);render();
+  toast(`${p.code}: ${C.counts[p.code]}`);
+  const el=document.querySelector(`.item[data-code="${CSS.escape(p.code)}"]`);
+  if(el){el.classList.add("flash");el.scrollIntoView({block:"center",behavior:"smooth"});setTimeout(()=>el.classList.remove("flash"),900)}
 });
 $("#q").addEventListener("input",render);
-$("#scanBtn").onclick=()=>{$("#q").value="";$("#q").focus();toast("Escanea: cada lectura descuenta 1")};
+$("#scanBtn").onclick=()=>{$("#q").value="";$("#q").focus();window.scrollTo({top:0});toast("Escanea: cada lectura suma 1")};
+$("#sendBtn").onclick=openSend;
+$("#hola").onclick=()=>askTienda(true);
+$("#backdrop").onclick=()=>{if(tienda)closeSheet()};
 
 document.addEventListener("click",e=>{
   const b=e.target.closest("[data-b]");if(b){brand=b.dataset.b;render();return}
-  const d=e.target.closest("[data-d]");if(d){const it=state.items.find(i=>i.id===d.dataset.id);move(it,+d.dataset.d);return}
-  const o=e.target.closest("[data-open]");if(o){openItem(o.dataset.open);return}
-  const n=e.target.closest("nav button");if(n){
-    if(n.dataset.view){view=n.dataset.view;document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("on",x===n));
-      $("#viewInv").hidden=view!=="inv";$("#viewHist").hidden=view!=="hist";$("#chips").hidden=view!=="inv"}
-    if(n.dataset.act==="new")openNew();
-    if(n.dataset.act==="export")exportCSV();
-  }
+  const d=e.target.closest("[data-d]");if(d){const c=d.dataset.c,cur=C.counts[d.dataset.c];
+    setCount(c,cur==null?(+d.dataset.d>0?1:0):Math.max(0,cur+ +d.dataset.d));render()}
 });
-$("#backdrop").onclick=closeSheet;
-render();
+document.addEventListener("change",e=>{const c=e.target.dataset?.in;if(c==null)return;setCount(c,e.target.value);render()});
+
+render();askTienda(false);
 </script>
 </body>
 </html>
