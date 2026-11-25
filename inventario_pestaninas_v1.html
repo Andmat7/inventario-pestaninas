@@ -149,7 +149,7 @@ const save=()=>localStorage.setItem(key(),JSON.stringify(C));
 let brand="Todas";
 
 // Fotos: pon los archivos en img/CODIGO_caja.jpg y img/CODIGO_tienda.jpg (ej: img/P1532_caja.jpg).
-// Mientras no existan, se muestra un placeholder dibujado con el color de la marca.
+// Mientras no existan, se usa img/placeholder_caja.jpg y img/placeholder_tienda.jpg para todos.
 const BRAND_COLORS={Esika:"#e8590c",Cyzone:"#d6336c",Yanbal:"#7048e8",Lbel:"#495057",Maquillaje:"#1098ad"};
 function placeholder(code,brand,kind){
   const c=BRAND_COLORS[brand]||"#868e96";
@@ -159,8 +159,13 @@ function placeholder(code,brand,kind){
   const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="${c}" opacity=".12"/>${art}<text x="50" y="94" font-family="system-ui,sans-serif" font-size="9" font-weight="700" text-anchor="middle" fill="${c}">${code}</text></svg>`;
   return "data:image/svg+xml,"+encodeURIComponent(svg);
 }
+function imgFallback(el){
+  // 1) img/CODIGO_tipo.jpg  2) img/placeholder_tipo.jpg (foto de referencia)  3) dibujo SVG
+  if(!el.dataset.ph){el.dataset.ph=1;el.src="img/placeholder_"+el.dataset.kind+".jpg"}
+  else{el.onerror=null;el.src=placeholder(el.dataset.code,el.dataset.brand,el.dataset.kind)}
+}
 function imgTag(p,kind){
-  return `<img loading="lazy" alt="${esc(p.name)} (${kind})" src="img/${encodeURIComponent(p.code)}_${kind}.jpg" data-code="${esc(p.code)}" data-brand="${esc(p.brand)}" data-kind="${kind}" onerror="this.onerror=null;this.src=placeholder(this.dataset.code,this.dataset.brand,this.dataset.kind)">`;
+  return `<img loading="lazy" alt="${esc(p.name)} (${kind})" src="img/${encodeURIComponent(p.code)}_${kind}.jpg" data-code="${esc(p.code)}" data-brand="${esc(p.brand)}" data-kind="${kind}" onerror="imgFallback(this)">`;
 }
 function openViewer(code){
   const p=PRODUCTS.find(x=>x.code===code);if(!p)return;
