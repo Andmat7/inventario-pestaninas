@@ -18,7 +18,7 @@
   header{padding:20px 0 6px;display:flex;align-items:center;justify-content:space-between;gap:12px}
   .hello{color:var(--muted);font-size:.8rem;text-transform:capitalize}
   h1{margin:2px 0 0;font-size:1.7rem;font-weight:800;background:linear-gradient(90deg,var(--acc),var(--acc-2));-webkit-background-clip:text;background-clip:text;color:transparent;cursor:pointer}
-  .ring{--p:0;width:64px;height:64px;border-radius:50%;background:conic-gradient(var(--acc) calc(var(--p)*1%),var(--panel-2) 0);display:grid;place-items:center;flex:none}
+  .ring{--p:0;position:relative;width:64px;height:64px;border-radius:50%;background:conic-gradient(var(--acc) calc(var(--p)*1%),var(--panel-2) 0);display:grid;place-items:center;flex:none}
   .ring span{width:50px;height:50px;border-radius:50%;background:var(--bg);display:grid;place-items:center;font-weight:800;font-size:.8rem}
   .seg{display:grid;grid-template-columns:1fr 1fr;background:var(--panel);border-radius:14px;padding:4px;margin:12px 0;position:sticky;top:8px;z-index:5;box-shadow:0 8px 20px rgba(0,0,0,.35)}
   .seg button{border:0;background:none;color:var(--muted);padding:10px 4px;border-radius:10px;font-weight:700;font-size:.9rem;cursor:pointer}
@@ -83,6 +83,19 @@
     .kpis{grid-template-columns:repeat(4,1fr)}
     dialog{border-radius:22px;margin:auto}
   }
+  /* Mecha: chispa en el borde del progreso */
+  @keyframes chispa{from{scale:.75;filter:brightness(1)}to{scale:1.25;filter:brightness(1.4)}}
+  @keyframes chispas{0%{translate:0 0;scale:1;opacity:1}100%{translate:7px -6px;scale:1.8;opacity:0}}
+  .spark,.sparks{position:absolute;pointer-events:none}
+  .spark{width:14px;height:14px;margin:-7px;border-radius:50%;background:radial-gradient(circle,#fff 0 28%,#ffe066 42%,#ff922b 62%,transparent 72%);box-shadow:0 0 10px 3px rgba(255,190,80,.75);animation:chispa .16s ease-in-out infinite alternate}
+  .sparks{width:3px;height:3px;margin:-1.5px;border-radius:50%;background:#ffd43b;box-shadow:6px -6px 0 #ff922b,-4px -9px 0 #fff3bf,8px 5px 0 #ffa94d,-7px 4px 0 #ffe066,2px -12px 0 #fff;animation:chispas .45s linear infinite}
+  .ring .spark,.ring .sparks{left:50%;top:50%;display:none;transform:rotate(calc(var(--p)*3.6deg)) translateY(-28.5px)}
+  .ring.lit .spark,.ring.lit .sparks{display:block}
+  .reset-opts{display:grid;gap:8px;margin-top:12px}
+  .reset-opts button{text-align:left;border-radius:14px;padding:14px;font-size:.95rem;cursor:pointer;line-height:1.3}
+  .reset-opts small{display:block;opacity:.75;font-size:.78rem;font-weight:400}
+  .reset-opts button{border:1px solid var(--line);background:var(--panel-2);color:var(--ink)}
+  .reset-opts .danger{background:linear-gradient(90deg,var(--acc),var(--acc-2));color:var(--on-acc);border:0;font-weight:700}
   /* TEMPORAL: selector de paletas */
   .pal-btn{position:fixed;right:14px;bottom:calc(84px + env(safe-area-inset-bottom));z-index:30;width:48px;height:48px;border-radius:50%;border:0;background:var(--ink);color:#fff;font-size:1.3rem;box-shadow:0 6px 18px rgba(0,0,0,.25);cursor:pointer}
   .pal-box{position:fixed;color:#222;right:14px;bottom:calc(140px + env(safe-area-inset-bottom));z-index:30;width:260px;max-width:calc(100vw - 28px);background:#fff;border-radius:16px;box-shadow:0 12px 32px rgba(0,0,0,.22);padding:8px;display:none}
@@ -103,7 +116,7 @@
       <div class="hello" id="today"></div>
       <h1 id="hola" title="Cambiar tienda">Hola 👋</h1>
     </div>
-    <div class="ring" id="ring"><span id="ringTxt">0%</span></div>
+    <div class="ring" id="ring"><b class="sparks"></b><b class="spark"></b><span id="ringTxt">0%</span></div>
   </header>
 
   <div class="seg" id="seg">
@@ -226,7 +239,7 @@ function renderHead(){
   $("#hola").textContent=tienda?`Hola ${tienda} 👋`:"Hola 👋";
   $("#today").textContent=new Date().toLocaleDateString("es-CO",{weekday:"long",day:"numeric",month:"long"});
   const pct=Math.round(Object.keys(C.counts).length/PRODUCTS.length*100);
-  $("#ring").style.setProperty("--p",pct);$("#ringTxt").textContent=pct+"%";
+  $("#ring").style.setProperty("--p",pct);$("#ring").classList.toggle("lit",pct>0&&pct<100);$("#ringTxt").textContent=pct+"%";
 }
 function renderCount(){
   $("#groups").innerHTML=grouped(list()).map(([b,ps])=>{
@@ -257,7 +270,7 @@ function renderSend(){
 }
 function renderBottom(){
   $("#bottom").innerHTML=tab==="count"
-    ?`<button class="bbtn s" id="scan">⌁ Escanear</button><button class="bbtn p" id="goSend">Revisar y enviar →</button>`
+    ?`<button class="bbtn s" id="reset" title="Poner en cero">↺</button><button class="bbtn s" id="scan">⌁ Escanear</button><button class="bbtn p" id="goSend">Revisar y enviar →</button>`
     :`<button class="bbtn s" id="dl">⬇ CSV</button><button class="bbtn wa" id="wa">Enviar por WhatsApp</button>${navigator.share?`<button class="bbtn s" id="sh">↗</button>`:""}`;
 }
 function render(){
@@ -328,6 +341,16 @@ document.addEventListener("click",async e=>{
   const v=e.target.closest("[data-view]");if(v){openViewer(v.dataset.view);return}
   const id=e.target.id;
   if(id==="scan"){$("#q").value="";$("#q").focus();toast("Escanea: cada lectura suma 1")}
+  if(id==="reset"){const d=$("#dlg");d.innerHTML=`<h2>Reiniciar conteo de hoy</h2>
+    <p class="muted" style="margin:0">Esto cambia el conteo de ${esc(tienda||"esta tienda")} de hoy.</p>
+    <div class="reset-opts">
+      <button class="danger" id="rsBorrar">↺ Borrar todo<small>Todas las referencias vuelven a "sin contar"</small></button>
+      <button id="rsCero">0 Poner todo en cero<small>Marca todas las referencias como contadas con 0</small></button>
+      <button id="rsNo">Cancelar</button>
+    </div>`;d.showModal();return}
+  if(id==="rsBorrar"){C.counts={};C.sentAt=null;save();$("#dlg").close();render();toast("Conteo borrado");return}
+  if(id==="rsCero"){PRODUCTS.forEach(p=>C.counts[p.code]=0);C.sentAt=null;save();$("#dlg").close();render();toast("Todo en 0");return}
+  if(id==="rsNo"){$("#dlg").close();return}
   if(id==="goSend"){tab="send";render();window.scrollTo({top:0})}
   if(id==="dl")csv();
   if(id==="wa"){if(!tienda)return askTienda(true);if(!confirmPend())return;window.open("https://wa.me/?text="+encodeURIComponent(reporte()),"_blank");sent()}
