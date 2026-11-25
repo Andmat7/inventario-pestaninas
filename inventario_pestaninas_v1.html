@@ -3,17 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#d6336c">
+<meta name="theme-color" content="#c90e5d">
 <title>Conteo de pestañinas</title>
 <style>
   :root{
-    --bg:#fff7fa; --card:#fff; --ink:#2b1a22; --muted:#8a6f7b; --line:#f1dbe4;
-    --brand:#d6336c; --brand-2:#f06595; --ok:#2f9e44; --r:18px; --shadow:0 6px 20px rgba(214,51,108,.10);
+    --bg:#fff2f8; --card:#fff; --ink:#3a0f22; --muted:#9a5b78; --line:#fad3e5;
+    --brand:#c90e5d; --brand-2:#e7579c; --pink:#fe9bc7; --soft:#ffe3ef; --ok:#2f9e44; --r:18px; --shadow:0 6px 20px rgba(201,14,93,.12);
+    --head:linear-gradient(135deg,var(--brand),var(--brand-2)); --head-ink:#fff;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
   body{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
-  header{position:sticky;top:0;z-index:5;background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;padding:18px 16px 14px;border-radius:0 0 24px 24px;box-shadow:var(--shadow)}
+  header{position:sticky;top:0;z-index:5;background:var(--head);color:var(--head-ink);padding:18px 16px 14px;border-radius:0 0 24px 24px;box-shadow:var(--shadow)}
   .top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
   .hola{font-size:1.5rem;font-weight:800;margin:0;line-height:1.1;cursor:pointer}
   .sub{font-size:.8rem;opacity:.9;margin-top:4px}
@@ -31,9 +32,9 @@
   .list{display:grid;gap:10px}
   .item{background:var(--card);border-radius:var(--r);padding:12px;box-shadow:var(--shadow);display:grid;grid-template-columns:auto 1fr;gap:10px 12px;align-items:center;border:2px solid transparent;transition:border-color .2s}
   .thumbs{display:flex;gap:6px;cursor:zoom-in}
-  .thumb{position:relative;width:58px;height:58px;border-radius:12px;overflow:hidden;background:#fdeef4;flex:none}
+  .thumb{position:relative;width:58px;height:58px;border-radius:12px;overflow:hidden;background:var(--soft);flex:none}
   .thumb img{width:100%;height:100%;object-fit:cover;display:block}
-  .thumb em{position:absolute;left:0;right:0;bottom:0;font-style:normal;font-size:.58rem;font-weight:700;text-align:center;color:#fff;background:rgba(43,26,34,.55);padding:2px 0;letter-spacing:.03em}
+  .thumb em{position:absolute;left:0;right:0;bottom:0;font-style:normal;font-size:.58rem;font-weight:700;text-align:center;color:#fff;background:rgba(58,15,34,.55);padding:2px 0;letter-spacing:.03em}
   .foot{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;border-top:1px dashed var(--line);padding-top:10px}
   .foot .lbl{font-size:.75rem;color:var(--muted);font-weight:600}
   .viewer{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0 4px}
@@ -44,30 +45,30 @@
   .item.flash{border-color:var(--brand)}
   .name{font-weight:600;font-size:.95rem;line-height:1.25}
   .meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;font-size:.72rem;color:var(--muted)}
-  .tag{background:#fdeef4;color:var(--brand);padding:2px 8px;border-radius:999px;font-weight:600}
+  .tag{background:var(--soft);color:var(--brand);padding:2px 8px;border-radius:999px;font-weight:600}
   .stepper{display:flex;align-items:center;gap:6px}
   .stepper button{width:42px;height:42px;border-radius:12px;border:0;font-size:1.3rem;font-weight:700;cursor:pointer}
-  .minus{background:#f8e9ef;color:var(--brand)}
+  .minus{background:var(--soft);color:var(--brand)}
   .plus{background:var(--brand);color:#fff}
   .qty{width:46px;text-align:center;font-weight:800;font-size:1.2rem;border:0;background:none;color:var(--ink);padding:0}
-  .qty::placeholder{color:#d9c3cd}
+  .qty::placeholder{color:#f0b3cf}
   .empty{text-align:center;color:var(--muted);padding:40px 0}
   .bottom{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);padding:10px 16px calc(10px + env(safe-area-inset-bottom));z-index:6;display:flex;gap:8px}
   .bottom button{border:0;border-radius:14px;padding:15px;font-weight:800;font-size:1rem;cursor:pointer}
   .send{flex:1;background:var(--brand);color:#fff}
-  .sec{background:#f8e9ef;color:var(--brand)}
-  .backdrop{position:fixed;inset:0;background:rgba(43,26,34,.45);opacity:0;pointer-events:none;transition:.2s;z-index:9}
+  .sec{background:var(--soft);color:var(--brand)}
+  .backdrop{position:fixed;inset:0;background:rgba(58,15,34,.45);opacity:0;pointer-events:none;transition:.2s;z-index:9}
   .backdrop.open{opacity:1;pointer-events:auto}
   .sheet{position:fixed;left:0;right:0;bottom:0;background:#fff;border-radius:24px 24px 0 0;padding:10px 18px calc(18px + env(safe-area-inset-bottom));transform:translateY(105%);transition:transform .25s ease;z-index:10;max-height:90vh;overflow:auto}
   .sheet.open{transform:none}
   .grab{width:44px;height:5px;background:var(--line);border-radius:9px;margin:0 auto 12px}
   .sheet h2{margin:0 0 6px;font-size:1.15rem}
-  .preview{background:#fff7fa;border:1px solid var(--line);border-radius:14px;padding:12px;font-family:ui-monospace,Consolas,monospace;font-size:.78rem;white-space:pre-wrap;max-height:40vh;overflow:auto;margin:10px 0}
+  .preview{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:12px;font-family:ui-monospace,Consolas,monospace;font-size:.78rem;white-space:pre-wrap;max-height:40vh;overflow:auto;margin:10px 0}
   .warn{background:#fff4e6;color:#a35a00;border-radius:12px;padding:10px 12px;font-size:.85rem;margin-top:8px}
   .btn{width:100%;border:0;border-radius:14px;padding:14px;font-size:1rem;font-weight:700;cursor:pointer;margin-top:8px}
   .btn.primary{background:var(--brand);color:#fff}
   .btn.wa{background:#25d366;color:#08331a}
-  .btn.ghost{background:#f8e9ef;color:var(--brand)}
+  .btn.ghost{background:var(--soft);color:var(--brand)}
   .field{width:100%;border:1px solid var(--line);border-radius:12px;padding:12px;font-size:16px;margin-top:6px}
   .stores{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
   .stores button{border:1px solid var(--line);background:#fff;border-radius:12px;padding:12px;font-size:.95rem;cursor:pointer}
@@ -78,6 +79,17 @@
     .list{grid-template-columns:1fr 1fr}
     .sheet{max-width:520px;margin:0 auto}
   }
+  /* TEMPORAL: selector de paletas */
+  .pal-btn{position:fixed;right:14px;bottom:calc(84px + env(safe-area-inset-bottom));z-index:30;width:48px;height:48px;border-radius:50%;border:0;background:var(--ink);color:#fff;font-size:1.3rem;box-shadow:0 6px 18px rgba(0,0,0,.25);cursor:pointer}
+  .pal-box{position:fixed;right:14px;bottom:calc(140px + env(safe-area-inset-bottom));z-index:30;width:260px;max-width:calc(100vw - 28px);background:#fff;border-radius:16px;box-shadow:0 12px 32px rgba(0,0,0,.22);padding:8px;display:none}
+  .pal-box.open{display:block}
+  .pal-box h3{margin:6px 8px 8px;font-size:.8rem;color:#666;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+  .pal-opt{display:flex;align-items:center;gap:10px;width:100%;border:2px solid transparent;background:none;border-radius:12px;padding:8px;cursor:pointer;text-align:left;font-size:.88rem;color:#222}
+  .pal-opt.on{border-color:#222}
+  .pal-opt small{display:block;color:#888;font-size:.72rem}
+  .pal-sw{display:flex;flex:none}
+  .pal-sw i{width:16px;height:28px;display:block}
+  .pal-sw i:first-child{border-radius:8px 0 0 8px}.pal-sw i:last-child{border-radius:0 8px 8px 0}
 </style>
 </head>
 <body>
@@ -318,6 +330,34 @@ document.addEventListener("click",e=>{
 document.addEventListener("change",e=>{const c=e.target.dataset?.in;if(c==null)return;setCount(c,e.target.value);render()});
 
 render();askTienda(false);
+</script>
+<!-- TEMPORAL: selector de paletas (borrar al decidir) -->
+<button class="pal-btn" id="palBtn" title="Probar paletas">🎨</button>
+<div class="pal-box" id="palBox"><h3>Paletas (temporal)</h3><div id="palList"></div></div>
+<script>
+(function(){
+  const P=[
+    {id:'difer',name:'DIFER (nueva)',note:'Magenta del logo + rosa',v:{bg:'#fff2f8',ink:'#3a0f22',muted:'#9a5b78',line:'#fad3e5',brand:'#c90e5d','brand-2':'#e7579c',soft:'#ffe3ef'}},
+    {id:'difer-rosa',name:'DIFER rosa',note:'Encabezado rosa, texto magenta',v:{bg:'#fff2f8',ink:'#3a0f22',muted:'#9a5b78',line:'#fad3e5',brand:'#c90e5d','brand-2':'#e7579c',soft:'#ffe3ef',head:'#fe9bc7','head-ink':'#8a0a40'}},
+    {id:'antigua',name:'Antigua',note:'La paleta anterior',v:{bg:'#fff7fa',ink:'#2b1a22',muted:'#8a6f7b',line:'#f1dbe4',brand:'#d6336c','brand-2':'#f06595',soft:'#f8e9ef'}},
+    {id:'durazno',name:'Frambuesa y durazno',note:'Magenta + tono de las rosas',v:{bg:'#fff6f2',ink:'#3a1620',muted:'#9a6a6a',line:'#fbd9cc',brand:'#c90e5d','brand-2':'#f2836b',soft:'#ffe7dd'}},
+    {id:'empolvado',name:'Rosa empolvado',note:'Más suave y elegante',v:{bg:'#fbf4f5',ink:'#3b2229',muted:'#8c6670',line:'#eed5dc',brand:'#b0476b','brand-2':'#d47f9a',soft:'#f6e4e9'}},
+    {id:'ciruela',name:'Ciruela',note:'Más oscuro, contraste alto',v:{bg:'#fbf3f8',ink:'#2e1428',muted:'#7f5f77',line:'#ead0e2',brand:'#8e2c6e','brand-2':'#c2549a',soft:'#f3e1ee'}}
+  ];
+  const root=document.documentElement, list=document.getElementById('palList');
+  function apply(p){
+    root.style.setProperty('--head',p.v.head||'linear-gradient(135deg,var(--brand),var(--brand-2))');
+    root.style.setProperty('--head-ink',p.v['head-ink']||'#fff');
+    for(const k in p.v){ if(k!=='head'&&k!=='head-ink') root.style.setProperty('--'+k,p.v[k]); }
+    document.querySelector('meta[name=theme-color]').content=p.v.head||p.v.brand;
+    localStorage.setItem('paleta',p.id);
+    list.querySelectorAll('.pal-opt').forEach(b=>b.classList.toggle('on',b.dataset.id===p.id));
+  }
+  list.innerHTML=P.map(p=>`<button class="pal-opt" data-id="${p.id}"><span class="pal-sw">${[p.v.brand,p.v['brand-2'],p.v.head||p.v.soft,p.v.bg,p.v.ink].map(c=>`<i style="background:${c}"></i>`).join('')}</span><span>${p.name}<small>${p.note}</small></span></button>`).join('');
+  list.onclick=e=>{const b=e.target.closest('.pal-opt'); if(b) apply(P.find(p=>p.id===b.dataset.id));};
+  document.getElementById('palBtn').onclick=()=>document.getElementById('palBox').classList.toggle('open');
+  apply(P.find(p=>p.id===localStorage.getItem('paleta'))||P[0]);
+})();
 </script>
 </body>
 </html>

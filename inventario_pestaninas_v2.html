@@ -3,12 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#14111a">
+<meta name="theme-color" content="#1a0d14">
 <title>Conteo de pestañinas · Panel</title>
 <style>
   :root{
-    --bg:#14111a; --panel:#1d1926; --panel-2:#262033; --ink:#f4effa; --muted:#a49cb3; --line:#332b42;
-    --acc:#b197fc; --acc-2:#e599f7; --ok:#69db7c; --warn:#ffd43b; --r:16px;
+    --bg:#1a0d14; --panel:#261420; --panel-2:#331a2b; --ink:#fdeef5; --muted:#c39bb0; --line:#43233a;
+    --acc:#fe9bc7; --acc-2:#e83e8c; --ok:#69db7c; --warn:#ffd43b; --r:16px;
+    --on-acc:#3a0f22; --ok-bg:#1f3a26; --bar:rgba(26,13,20,.92);
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
@@ -30,7 +31,7 @@
   .ghead{display:flex;align-items:center;justify-content:space-between;padding:14px;cursor:pointer;user-select:none}
   .ghead small{color:var(--muted);font-size:.75rem}
   .pill{background:var(--panel-2);border-radius:999px;padding:4px 10px;font-size:.75rem;color:var(--muted)}
-  .pill.full{background:#1f3a26;color:var(--ok)}
+  .pill.full{background:var(--ok-bg);color:var(--ok)}
   .chev{transition:transform .2s;color:var(--muted);margin-left:8px}
   .group.closed .chev{transform:rotate(-90deg)}
   .group.closed .rows{display:none}
@@ -46,7 +47,7 @@
   .viewer figcaption{text-align:center;font-size:.8rem;color:var(--muted);margin-top:6px;font-weight:600}
   .r .n{font-size:.9rem;font-weight:600;line-height:1.25}
   .r .c{font-size:.72rem;color:var(--muted);margin-top:4px;font-variant-numeric:tabular-nums}
-  .r.flash{background:#2b2240}
+  .r.flash{background:color-mix(in srgb,var(--acc) 18%,var(--panel))}
   .cnt{display:flex;align-items:center;gap:6px}
   .cnt input{width:68px;background:var(--panel-2);border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:9px 6px;font-size:16px;text-align:center;font-weight:800}
   .cnt input.has{border-color:var(--acc)}
@@ -61,11 +62,11 @@
   .line:first-of-type{border-top:0}
   .muted{color:var(--muted);font-size:.8rem}
   .note{width:100%;background:var(--panel-2);border:1px solid var(--line);color:var(--ink);border-radius:12px;padding:12px;font-size:16px;min-height:70px;font-family:inherit;resize:vertical}
-  .sent{background:#1f3a26;color:var(--ok);border-radius:var(--r);padding:14px;margin-bottom:12px;font-weight:700}
-  .bottom{position:fixed;left:0;right:0;bottom:0;background:rgba(20,17,26,.92);backdrop-filter:blur(10px);border-top:1px solid var(--line);padding:10px 14px calc(10px + env(safe-area-inset-bottom));z-index:6}
+  .sent{background:var(--ok-bg);color:var(--ok);border-radius:var(--r);padding:14px;margin-bottom:12px;font-weight:700}
+  .bottom{position:fixed;left:0;right:0;bottom:0;background:var(--bar);backdrop-filter:blur(10px);border-top:1px solid var(--line);padding:10px 14px calc(10px + env(safe-area-inset-bottom));z-index:6}
   .bottom .wrap{display:flex;gap:8px;padding:0}
   .bbtn{flex:1;border:0;border-radius:14px;padding:14px;font-weight:800;font-size:.95rem;cursor:pointer}
-  .bbtn.p{background:linear-gradient(90deg,var(--acc),var(--acc-2));color:#1a1024}
+  .bbtn.p{background:linear-gradient(90deg,var(--acc),var(--acc-2));color:var(--on-acc)}
   .bbtn.s{background:var(--panel-2);color:var(--ink);flex:0 0 auto;padding:14px 16px}
   .bbtn.wa{background:#25d366;color:#08331a}
   dialog{border:0;border-radius:22px 22px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom));background:var(--panel);color:var(--ink);width:100%;max-width:520px;margin:auto auto 0}
@@ -82,6 +83,17 @@
     .kpis{grid-template-columns:repeat(4,1fr)}
     dialog{border-radius:22px;margin:auto}
   }
+  /* TEMPORAL: selector de paletas */
+  .pal-btn{position:fixed;right:14px;bottom:calc(84px + env(safe-area-inset-bottom));z-index:30;width:48px;height:48px;border-radius:50%;border:0;background:var(--ink);color:#fff;font-size:1.3rem;box-shadow:0 6px 18px rgba(0,0,0,.25);cursor:pointer}
+  .pal-box{position:fixed;color:#222;right:14px;bottom:calc(140px + env(safe-area-inset-bottom));z-index:30;width:260px;max-width:calc(100vw - 28px);background:#fff;border-radius:16px;box-shadow:0 12px 32px rgba(0,0,0,.22);padding:8px;display:none}
+  .pal-box.open{display:block}
+  .pal-box h3{margin:6px 8px 8px;font-size:.8rem;color:#666;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+  .pal-opt{display:flex;align-items:center;gap:10px;width:100%;border:2px solid transparent;background:none;border-radius:12px;padding:8px;cursor:pointer;text-align:left;font-size:.88rem;color:#222}
+  .pal-opt.on{border-color:#222}
+  .pal-opt small{display:block;color:#888;font-size:.72rem}
+  .pal-sw{display:flex;flex:none}
+  .pal-sw i{width:16px;height:28px;display:block}
+  .pal-sw i:first-child{border-radius:8px 0 0 8px}.pal-sw i:last-child{border-radius:0 8px 8px 0}
 </style>
 </head>
 <body>
@@ -324,6 +336,32 @@ document.addEventListener("click",async e=>{
 document.addEventListener("change",e=>{const c=e.target.dataset?.in;if(c==null)return;setCount(c,e.target.value);render()});
 
 render();askTienda(false);
+</script>
+<!-- TEMPORAL: selector de paletas (borrar al decidir) -->
+<button class="pal-btn" id="palBtn" title="Probar paletas">🎨</button>
+<div class="pal-box" id="palBox"><h3>Paletas (temporal)</h3><div id="palList"></div></div>
+<script>
+(function(){
+  const P=[
+    {id:'difer-noche',name:'DIFER noche (nueva)',note:'Rosa de la imagen sobre vino oscuro',v:{bg:'#1a0d14',panel:'#261420','panel-2':'#331a2b',ink:'#fdeef5',muted:'#c39bb0',line:'#43233a',acc:'#fe9bc7','acc-2':'#e83e8c','on-acc':'#3a0f22',ok:'#69db7c','ok-bg':'#1f3a26',bar:'rgba(26,13,20,.92)'}},
+    {id:'difer-magenta',name:'DIFER magenta',note:'Magenta del logo más protagonista',v:{bg:'#1a0d14',panel:'#261420','panel-2':'#331a2b',ink:'#fdeef5',muted:'#c39bb0',line:'#43233a',acc:'#e0307a','acc-2':'#fe9bc7','on-acc':'#fff',ok:'#69db7c','ok-bg':'#1f3a26',bar:'rgba(26,13,20,.92)'}},
+    {id:'grafito',name:'Grafito y rosa',note:'Gris neutro con acentos rosa',v:{bg:'#141214',panel:'#1e1b1e','panel-2':'#2a252a',ink:'#f7f0f4',muted:'#a89aa2',line:'#362f35',acc:'#fe9bc7','acc-2':'#ff6fae','on-acc':'#3a0f22',ok:'#69db7c','ok-bg':'#1f3a26',bar:'rgba(20,18,20,.92)'}},
+    {id:'antigua',name:'Antigua',note:'La paleta anterior (lila)',v:{bg:'#14111a',panel:'#1d1926','panel-2':'#262033',ink:'#f4effa',muted:'#a49cb3',line:'#332b42',acc:'#b197fc','acc-2':'#e599f7','on-acc':'#1a1024',ok:'#69db7c','ok-bg':'#1f3a26',bar:'rgba(20,17,26,.92)'}},
+    {id:'vino-durazno',name:'Vino y durazno',note:'Tono cálido de las rosas',v:{bg:'#1c1012',panel:'#29171b','panel-2':'#362026',ink:'#fff1ec',muted:'#c9a29c',line:'#47292f',acc:'#ffb4a2','acc-2':'#fe9bc7','on-acc':'#3a1620',ok:'#69db7c','ok-bg':'#1f3a26',bar:'rgba(28,16,18,.92)'}},
+    {id:'ciruela',name:'Ciruela noche',note:'Morado-rosa, más sobrio',v:{bg:'#170f1a',panel:'#22172a','panel-2':'#2e1f38',ink:'#f6eefa',muted:'#b39cbd',line:'#3a2a46',acc:'#d77bd0','acc-2':'#fe9bc7','on-acc':'#23102a',ok:'#69db7c','ok-bg':'#1f3a26',bar:'rgba(23,15,26,.92)'}}
+  ];
+  const root=document.documentElement, list=document.getElementById('palList');
+  function apply(p){
+    for(const k in p.v) root.style.setProperty('--'+k,p.v[k]);
+    document.querySelector('meta[name=theme-color]').content=p.v.bg;
+    localStorage.setItem('paleta-v2',p.id);
+    list.querySelectorAll('.pal-opt').forEach(b=>b.classList.toggle('on',b.dataset.id===p.id));
+  }
+  list.innerHTML=P.map(p=>`<button class="pal-opt" data-id="${p.id}"><span class="pal-sw">${[p.v.acc,p.v['acc-2'],p.v['panel-2'],p.v.bg,p.v.ink].map(c=>`<i style="background:${c}"></i>`).join('')}</span><span>${p.name}<small>${p.note}</small></span></button>`).join('');
+  list.onclick=e=>{const b=e.target.closest('.pal-opt'); if(b) apply(P.find(p=>p.id===b.dataset.id));};
+  document.getElementById('palBtn').onclick=()=>document.getElementById('palBox').classList.toggle('open');
+  apply(P.find(p=>p.id===localStorage.getItem('paleta-v2'))||P[0]);
+})();
 </script>
 </body>
 </html>
