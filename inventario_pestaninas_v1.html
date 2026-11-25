@@ -38,7 +38,7 @@
   .foot .lbl{font-size:.75rem;color:var(--muted);font-weight:600}
   .viewer{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0 4px}
   .viewer figure{margin:0}
-  .viewer img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:16px;background:#fdeef4;display:block}
+  .viewer img{width:100%;aspect-ratio:3/4;object-fit:contain;border-radius:16px;background:#fff;border:1px solid var(--line);display:block}
   .viewer figcaption{text-align:center;font-size:.8rem;color:var(--muted);margin-top:6px;font-weight:600}
   .item.done{border-color:#c3e6cb}
   .item.flash{border-color:var(--brand)}
@@ -148,8 +148,11 @@ function load(){return JSON.parse(localStorage.getItem(key())||"null")||{counts:
 const save=()=>localStorage.setItem(key(),JSON.stringify(C));
 let brand="Todas";
 
-// Fotos: pon los archivos en img/CODIGO_caja.jpg y img/CODIGO_tienda.jpg (ej: img/P1532_caja.jpg).
-// Mientras no existan, se usa img/placeholder_caja.jpg y img/placeholder_tienda.jpg para todos.
+// Fotos por defecto (las mismas para todos): img/empacada.jpg e img/imagen_tienda.jpg.
+// Para dar foto propia a un producto, agrégalo aquí, ej: P1532:{caja:"img/P1532_caja.jpg",tienda:"img/P1532_tienda.jpg"}
+const FOTOS_DEFECTO={caja:"img/empacada.jpg",tienda:"img/imagen_tienda.jpg"};
+const FOTOS={};
+const foto=(p,kind)=>(FOTOS[p.code]&&FOTOS[p.code][kind])||FOTOS_DEFECTO[kind];
 const BRAND_COLORS={Esika:"#e8590c",Cyzone:"#d6336c",Yanbal:"#7048e8",Lbel:"#495057",Maquillaje:"#1098ad"};
 function placeholder(code,brand,kind){
   const c=BRAND_COLORS[brand]||"#868e96";
@@ -160,12 +163,12 @@ function placeholder(code,brand,kind){
   return "data:image/svg+xml,"+encodeURIComponent(svg);
 }
 function imgFallback(el){
-  // 1) img/CODIGO_tipo.jpg  2) img/placeholder_tipo.jpg (foto de referencia)  3) dibujo SVG
-  if(!el.dataset.ph){el.dataset.ph=1;el.src="img/placeholder_"+el.dataset.kind+".jpg"}
+  // 1) foto propia  2) foto por defecto  3) dibujo SVG
+  if(!el.dataset.ph){el.dataset.ph=1;el.src=FOTOS_DEFECTO[el.dataset.kind]}
   else{el.onerror=null;el.src=placeholder(el.dataset.code,el.dataset.brand,el.dataset.kind)}
 }
 function imgTag(p,kind){
-  return `<img loading="lazy" alt="${esc(p.name)} (${kind})" src="img/${encodeURIComponent(p.code)}_${kind}.jpg" data-code="${esc(p.code)}" data-brand="${esc(p.brand)}" data-kind="${kind}" onerror="imgFallback(this)">`;
+  return `<img loading="lazy" alt="${esc(p.name)} (${kind})" src="${foto(p,kind)}" data-code="${esc(p.code)}" data-brand="${esc(p.brand)}" data-kind="${kind}" onerror="imgFallback(this)">`;
 }
 function openViewer(code){
   const p=PRODUCTS.find(x=>x.code===code);if(!p)return;

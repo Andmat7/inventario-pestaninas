@@ -1,12 +1,16 @@
 # Fotos de los productos
 
-Cada producto usa dos fotos, nombradas con su **código**:
+Por ahora **todos los productos** usan las mismas dos fotos:
 
-| Foto | Nombre del archivo | Ejemplo |
-|---|---|---|
-| Cómo se ve empacada | `CODIGO_caja.jpg` | `P1532_caja.jpg` |
-| Cómo se ve en la tienda | `CODIGO_tienda.jpg` | `P1532_tienda.jpg` |
+| Foto | Archivo |
+|---|---|
+| Cómo se ve empacada | `img/empacada.jpg` |
+| Cómo se ve en la tienda | `img/imagen_tienda.jpg` |
 
-- El código va en mayúscula, igual que en la app (`P460`, no `p460`).
-- Formato `.jpg`, cuadrada de preferencia (ej. 600×600) y menos de 200 KB.
-- Si falta una foto, la app usa `placeholder_caja.jpg` / `placeholder_tienda.jpg` (Mega Full Volume 4D) para todos.
+Para darle fotos propias a un producto, súbelas a esta carpeta (ej. `P1532_caja.jpg` y `P1532_tienda.jpg`) y agrégalo en `FOTOS` dentro de cada HTML:
+
+```js
+const FOTOS={
+  P1532:{caja:"img/P1532_caja.jpg",tienda:"img/P1532_tienda.jpg"},
+};
+```
