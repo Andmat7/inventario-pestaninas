@@ -29,7 +29,17 @@
   .chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
   main{padding:8px 16px}
   .list{display:grid;gap:10px}
-  .item{background:var(--card);border-radius:var(--r);padding:12px;box-shadow:var(--shadow);display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;border:2px solid transparent;transition:border-color .2s}
+  .item{background:var(--card);border-radius:var(--r);padding:12px;box-shadow:var(--shadow);display:grid;grid-template-columns:auto 1fr;gap:10px 12px;align-items:center;border:2px solid transparent;transition:border-color .2s}
+  .thumbs{display:flex;gap:6px;cursor:zoom-in}
+  .thumb{position:relative;width:58px;height:58px;border-radius:12px;overflow:hidden;background:#fdeef4;flex:none}
+  .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+  .thumb em{position:absolute;left:0;right:0;bottom:0;font-style:normal;font-size:.58rem;font-weight:700;text-align:center;color:#fff;background:rgba(43,26,34,.55);padding:2px 0;letter-spacing:.03em}
+  .foot{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;border-top:1px dashed var(--line);padding-top:10px}
+  .foot .lbl{font-size:.75rem;color:var(--muted);font-weight:600}
+  .viewer{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0 4px}
+  .viewer figure{margin:0}
+  .viewer img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:16px;background:#fdeef4;display:block}
+  .viewer figcaption{text-align:center;font-size:.8rem;color:var(--muted);margin-top:6px;font-weight:600}
   .item.done{border-color:#c3e6cb}
   .item.flash{border-color:var(--brand)}
   .name{font-weight:600;font-size:.95rem;line-height:1.25}
@@ -138,6 +148,32 @@ function load(){return JSON.parse(localStorage.getItem(key())||"null")||{counts:
 const save=()=>localStorage.setItem(key(),JSON.stringify(C));
 let brand="Todas";
 
+// Fotos: pon los archivos en img/CODIGO_caja.jpg y img/CODIGO_tienda.jpg (ej: img/P1532_caja.jpg).
+// Mientras no existan, se muestra un placeholder dibujado con el color de la marca.
+const BRAND_COLORS={Esika:"#e8590c",Cyzone:"#d6336c",Yanbal:"#7048e8",Lbel:"#495057",Maquillaje:"#1098ad"};
+function placeholder(code,brand,kind){
+  const c=BRAND_COLORS[brand]||"#868e96";
+  const art=kind==="caja"
+    ? `<path d="M28 38 L50 28 L72 38 L72 70 L50 80 L28 70 Z" fill="${c}" opacity=".9"/><path d="M28 38 L50 48 L72 38 M50 48 L50 80" stroke="#fff" stroke-width="2" fill="none" opacity=".7"/>`
+    : `<rect x="44" y="18" width="12" height="20" rx="3" fill="#2b1a22"/><rect x="41" y="36" width="18" height="44" rx="6" fill="${c}"/><rect x="45" y="44" width="3" height="28" rx="1.5" fill="#fff" opacity=".5"/>`;
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="${c}" opacity=".12"/>${art}<text x="50" y="94" font-family="system-ui,sans-serif" font-size="9" font-weight="700" text-anchor="middle" fill="${c}">${code}</text></svg>`;
+  return "data:image/svg+xml,"+encodeURIComponent(svg);
+}
+function imgTag(p,kind){
+  return `<img loading="lazy" alt="${esc(p.name)} (${kind})" src="img/${encodeURIComponent(p.code)}_${kind}.jpg" data-code="${esc(p.code)}" data-brand="${esc(p.brand)}" data-kind="${kind}" onerror="this.onerror=null;this.src=placeholder(this.dataset.code,this.dataset.brand,this.dataset.kind)">`;
+}
+function openViewer(code){
+  const p=PRODUCTS.find(x=>x.code===code);if(!p)return;
+  const c=C.counts[p.code];
+  openSheet(`<h2>${esc(p.name)}</h2><div class="meta"><span class="tag">${esc(p.brand)}</span><span>${esc(p.code)} · ${esc(p.barcode)}</span></div>
+    <div class="viewer"><figure>${imgTag(p,"caja")}<figcaption>📦 Empacada</figcaption></figure><figure>${imgTag(p,"tienda")}<figcaption>🏬 En la tienda</figcaption></figure></div>
+    <div class="foot" style="margin-top:10px"><span class="lbl">Conteo</span><div class="stepper">
+      <button class="minus" data-d="-1" data-c="${esc(p.code)}" data-keep="1">−</button><div class="qty" id="vq">${c??"–"}</div>
+      <button class="plus" data-d="1" data-c="${esc(p.code)}" data-keep="1">+</button></div></div>
+    <button class="btn ghost" id="closeV">Cerrar</button>`);
+  $("#closeV").onclick=closeSheet;
+}
+
 function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),1600)}
 
 function setCount(code,v){
@@ -175,13 +211,18 @@ function render(){
   $("#list").innerHTML=items.length?items.map(p=>{
     const c=C.counts[p.code];
     return `<div class="item ${c!=null?"done":""}" data-code="${esc(p.code)}">
-      <div><div class="name">${esc(p.name)}</div>
+      <div class="thumbs" data-view="${esc(p.code)}" title="Ver fotos">
+        <div class="thumb">${imgTag(p,"caja")}<em>CAJA</em></div>
+        <div class="thumb">${imgTag(p,"tienda")}<em>TIENDA</em></div>
+      </div>
+      <div data-view="${esc(p.code)}" style="cursor:pointer"><div class="name">${esc(p.name)}</div>
         <div class="meta"><span class="tag">${esc(p.brand)}</span><span>${esc(p.code)}</span><span>· ${esc(p.barcode)}</span></div></div>
+      <div class="foot"><span class="lbl">${c!=null?"✓ Contado":"Conteo"}</span>
       <div class="stepper">
         <button class="minus" data-d="-1" data-c="${esc(p.code)}" aria-label="Restar">−</button>
         <input class="qty" type="number" inputmode="numeric" min="0" placeholder="–" value="${c??""}" data-in="${esc(p.code)}" aria-label="Cantidad">
         <button class="plus" data-d="1" data-c="${esc(p.code)}" aria-label="Sumar">+</button>
-      </div></div>`}).join(""):`<div class="empty">${brand==="__pend"?"¡Todo contado! 🎉":"Sin resultados 🔍"}</div>`;
+      </div></div></div>`}).join(""):`<div class="empty">${brand==="__pend"?"¡Todo contado! 🎉":"Sin resultados 🔍"}</div>`;
 }
 
 function openSheet(html){$("#sheet").innerHTML=`<div class="grab"></div>`+html;$("#sheet").classList.add("open");$("#backdrop").classList.add("open")}
@@ -262,7 +303,9 @@ $("#backdrop").onclick=()=>{if(tienda)closeSheet()};
 document.addEventListener("click",e=>{
   const b=e.target.closest("[data-b]");if(b){brand=b.dataset.b;render();return}
   const d=e.target.closest("[data-d]");if(d){const c=d.dataset.c,cur=C.counts[d.dataset.c];
-    setCount(c,cur==null?(+d.dataset.d>0?1:0):Math.max(0,cur+ +d.dataset.d));render()}
+    setCount(c,cur==null?(+d.dataset.d>0?1:0):Math.max(0,cur+ +d.dataset.d));render();
+    if(d.dataset.keep)$("#vq").textContent=C.counts[c];return}
+  const v=e.target.closest("[data-view]");if(v){openViewer(v.dataset.view)}
 });
 document.addEventListener("change",e=>{const c=e.target.dataset?.in;if(c==null)return;setCount(c,e.target.value);render()});
 
