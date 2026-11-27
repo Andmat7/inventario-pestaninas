@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#c90e5d">
+<meta name="theme-color" content="#d81b72">
 <title>Conteo de pestañinas</title>
 <style>
   :root{
-    --bg:#fff2f8; --card:#fff; --ink:#3a0f22; --muted:#9a5b78; --line:#fad3e5;
-    --brand:#c90e5d; --brand-2:#e7579c; --pink:#fe9bc7; --soft:#ffe3ef; --ok:#2f9e44; --r:18px; --shadow:0 6px 20px rgba(201,14,93,.12);
-    --head:linear-gradient(135deg,var(--brand),var(--brand-2)); --head-ink:#fff;
+    --bg:#f5f2f4; --card:#fff; --ink:#1f1a1d; --muted:#5f565b; --line:#e3dde0;
+    --brand:#e23a85; --brand-2:#d81b72; --pink:#fe9bc7; --soft:#fde3ee; --ok:#2f9e44; --r:18px; --shadow:0 6px 20px rgba(60,20,40,.08);
+    --head:linear-gradient(135deg,var(--brand-2),var(--brand)); --head-ink:#fff;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
@@ -29,7 +29,7 @@
   .chips{display:flex;gap:8px;overflow-x:auto;padding:14px 16px 4px;scrollbar-width:none}
   .chips::-webkit-scrollbar{display:none}
   .chip{flex:none;border:1px solid var(--line);background:#fff;color:var(--ink);padding:8px 14px;border-radius:999px;font-size:.85rem;cursor:pointer}
-  .chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .chip.on{background:var(--brand);color:#fff;border-color:var(--brand)}
   main{padding:8px 16px}
   .list{display:grid;gap:10px}
   .item{background:var(--card);border-radius:var(--r);padding:12px;box-shadow:var(--shadow);display:grid;grid-template-columns:auto 1fr;gap:10px 12px;align-items:center;border:2px solid transparent;transition:border-color .2s}
@@ -365,6 +365,7 @@ render();askTienda(false);
 <script>
 (function(){
   const P=[
+    {id:'imagen',name:'Rosa fucsia (v3)',note:'Los colores de image.png',v:{bg:'#f5f2f4',ink:'#1f1a1d',muted:'#5f565b',line:'#e3dde0',brand:'#e23a85','brand-2':'#d81b72',soft:'#fde3ee',head:'linear-gradient(135deg,#d81b72,#e23a85)'}},
     {id:'difer',name:'DIFER (nueva)',note:'Magenta del logo + rosa',v:{bg:'#fff2f8',ink:'#3a0f22',muted:'#9a5b78',line:'#fad3e5',brand:'#c90e5d','brand-2':'#e7579c',soft:'#ffe3ef'}},
     {id:'difer-rosa',name:'DIFER rosa',note:'Encabezado rosa, texto magenta',v:{bg:'#fff2f8',ink:'#3a0f22',muted:'#9a5b78',line:'#fad3e5',brand:'#c90e5d','brand-2':'#e7579c',soft:'#ffe3ef',head:'#fe9bc7','head-ink':'#8a0a40'}},
     {id:'antigua',name:'Antigua',note:'La paleta anterior',v:{bg:'#fff7fa',ink:'#2b1a22',muted:'#8a6f7b',line:'#f1dbe4',brand:'#d6336c','brand-2':'#f06595',soft:'#f8e9ef'}},
@@ -377,14 +378,14 @@ render();askTienda(false);
     root.style.setProperty('--head',p.v.head||'linear-gradient(135deg,var(--brand),var(--brand-2))');
     root.style.setProperty('--head-ink',p.v['head-ink']||'#fff');
     for(const k in p.v){ if(k!=='head'&&k!=='head-ink') root.style.setProperty('--'+k,p.v[k]); }
-    document.querySelector('meta[name=theme-color]').content=p.v.head||p.v.brand;
-    localStorage.setItem('paleta',p.id);
+    document.querySelector('meta[name=theme-color]').content=(p.v.head&&p.v.head[0]==='#')?p.v.head:(p.v['brand-2']||p.v.brand);
+    localStorage.setItem('paleta2',p.id);
     list.querySelectorAll('.pal-opt').forEach(b=>b.classList.toggle('on',b.dataset.id===p.id));
   }
   list.innerHTML=P.map(p=>`<button class="pal-opt" data-id="${p.id}"><span class="pal-sw">${[p.v.brand,p.v['brand-2'],p.v.head||p.v.soft,p.v.bg,p.v.ink].map(c=>`<i style="background:${c}"></i>`).join('')}</span><span>${p.name}<small>${p.note}</small></span></button>`).join('');
   list.onclick=e=>{const b=e.target.closest('.pal-opt'); if(b) apply(P.find(p=>p.id===b.dataset.id));};
   document.getElementById('palBtn').onclick=()=>document.getElementById('palBox').classList.toggle('open');
-  apply(P.find(p=>p.id===localStorage.getItem('paleta'))||P[0]);
+  apply(P.find(p=>p.id===localStorage.getItem('paleta2'))||P[0]);
 })();
 </script>
 </body>
